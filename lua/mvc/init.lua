@@ -1,3 +1,5 @@
+local M = {}
+
 local Path = require 'plenary.path' -- For manipulating paths
 local ts_utils = require'nvim-treesitter.ts_utils' -- For syntax tree parsing
 
@@ -5,16 +7,16 @@ local P = function(x)
     print(vim.inspect(x))
 end
 
-projPath = Path:new('.')
+local projPath = Path:new('.')
 
 -- Return a list of separated path dirs and the current file
-cur_buf_path_list = function ()
+local cur_buf_path_list = function ()
     return Path:new(vim.api.nvim_buf_get_name(0)):_split()
 end
 
 -- Opens a file in the specified mode
 -- Available modes: {new, split, vsplit}
-switch = function (file, mode)
+local switch = function (file, mode)
     mode = mode or "new" -- By default open in a new window
 
     -- Is this really needed ?
@@ -26,7 +28,7 @@ switch = function (file, mode)
 end
 
 -- TODO: Refactor this ASAP
-get_current_method_name = function ()
+local get_current_method_name = function ()
     local current_node = ts_utils.get_node_at_cursor()
 
     local expr = current_node
@@ -38,7 +40,7 @@ get_current_method_name = function ()
         expr = expr:parent()
     end
 
-    method_name = ts_utils.get_node_text(expr:child(4))[1]
+    local method_name = ts_utils.get_node_text(expr:child(4))[1]
 
     -- Remove the Async suffix
     method_name = string.gsub(method_name, "Async", "")
@@ -54,7 +56,19 @@ local get_cur_file_path = function ()
     return _path[#_path]
 end
 
-switch_to_view = function ()
+-- Get the pure controller name
+local get_controller_name = function ()
+    -- Currnet file name is the last element in list
+    local current_controller_name = get_cur_file_path()
+
+    -- Delete Controller suffix and .cs
+    current_controller_name = string.gsub(current_controller_name, "Controller", "")
+    current_controller_name = string.gsub(current_controller_name, ".cs", "")
+
+    return current_controller_name;
+end
+
+local switch_to_view = function ()
     local viewName = get_current_method_name()
     local controller_name = get_controller_name()
     -- Views/ControllerName/viewName.cshtml
@@ -78,7 +92,7 @@ local make_controller_name = function (base_name)
     return string.format("%sController.cs", base_name)
 end
 
-switch_to_controller = function ()
+local switch_to_controller = function ()
     local cur_path = cur_buf_path_list()
     local controller = make_controller_name(cur_path[#cur_path - 1])
     local controller_path = projPath:joinpath("Controllers"):joinpath(controller)
@@ -86,17 +100,6 @@ switch_to_controller = function ()
     switch(controller_path, "new")
 end
 
--- Get the pure controller name
-get_controller_name = function ()
-    -- Currnet file name is the last element in list
-    current_controller_name = get_cur_file_path()
-
-    -- Delete Controller suffix and .cs
-    current_controller_name = string.gsub(current_controller_name, "Controller", "")
-    current_controller_name = string.gsub(current_controller_name, ".cs", "")
-
-    return current_controller_name;
-end
 
 PosType = {
     UNDEFINED = -1,
@@ -106,7 +109,7 @@ PosType = {
 
 -- Get the currnet file position
 -- Returns: Controller, View, Undefined
-get_cur_pos = function ()
+local get_cur_pos = function ()
     local cur = cur_buf_path_list()
     if cur[#cur - 1] == "Controllers" then
         return PosType.CONTROLLER
@@ -117,7 +120,7 @@ get_cur_pos = function ()
     end
 end
 
-Toggle = function ()
+M.Toggle = function ()
     -- Where we are now ? Controller or View.
     local cur_pos = get_cur_pos()
 
@@ -129,3 +132,4 @@ Toggle = function ()
 
     end
 end
+return M
