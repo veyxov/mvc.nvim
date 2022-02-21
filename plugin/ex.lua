@@ -46,18 +46,38 @@ get_current_method_name = function ()
     return method_name
 end
 
+-- TODO: Refactor this, we don't need
+-- all the other dirs that come with cur_buf_path_list
+local get_cur_file_path = function ()
+    local _path = cur_buf_path_list()
+    -- The file name is always the last entity
+    return _path[#_path]
+end
+
 switch_to_view = function ()
     local viewName = get_current_method_name()
     local controller_name = get_controller_name()
     -- Views/ControllerName/viewName.cshtml
     local viewPath = projPath:joinpath("Views"):joinpath(controller_name):joinpath(string.format("%s.cshtml", viewName))
-    switch(viewPath, "vsplit")
+    switch(viewPath, "new")
+end
+
+local make_controller_name = function (base_name)
+    return string.format("%sController.cs", base_name)
+end
+
+switch_to_controller = function ()
+    local cur_path = cur_buf_path_list()
+    local controller = make_controller_name(cur_path[#cur_path - 1])
+    local controller_path = projPath:joinpath("Controllers"):joinpath(controller)
+
+    switch(controller_path, "new")
 end
 
 -- Get the pure controller name
 get_controller_name = function ()
     -- Currnet file name is the last element in list
-    current_controller_name = cur_buf_path_list()[#cur_buf_path_list()]
+    current_controller_name = get_cur_file_path()
 
     -- Delete Controller suffix and .cs
     current_controller_name = string.gsub(current_controller_name, "Controller", "")
@@ -91,5 +111,9 @@ Toggle = function ()
 
     if cur_pos == PosType.CONTROLLER then
         switch_to_view()
+    else if cur_pos == PosType.VIEW then
+        switch_to_controller()
+    end
+
     end
 end
