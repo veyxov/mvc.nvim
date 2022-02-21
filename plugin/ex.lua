@@ -122,9 +122,6 @@ Toggle = function ()
     local cur_pos = get_cur_pos()
 
     if cur_pos == PosType.CONTROLLER then
-        -- if not pcall(switch_to_view) then
-        --     P("Error !")
-        -- end
         switch_to_view()
     else if cur_pos == PosType.VIEW then
         switch_to_controller()
