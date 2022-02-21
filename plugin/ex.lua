@@ -7,6 +7,11 @@ end
 
 projPath = Path:new('.')
 
+-- Return a list of separated path dirs and the current file
+cur_buf_path_list = function ()
+    return Path:new(vim.api.nvim_buf_get_name(0)):_split()
+end
+
 -- Opens a file in the specified mode
 -- Available modes: {new, split, vsplit}
 switch = function (file, mode)
@@ -31,20 +36,60 @@ get_current_method_name = function ()
             break
         end
         expr = expr:parent()
-        P(expr:type())
     end
 
     method_name = ts_utils.get_node_text(expr:child(4))[1]
 
     -- Remove the Async suffix
     method_name = string.gsub(method_name, "Async", "")
-    
+
     return method_name
 end
 
-switch_to_view = function (file_name)
+switch_to_view = function ()
     local viewName = get_current_method_name()
-    P(viewName)
-    local viewPath = projPath:joinpath("Views"):joinpath(file_name):joinpath(string.format("%s.cshtml", viewName))
+    local controller_name = get_controller_name()
+    -- Views/ControllerName/viewName.cshtml
+    local viewPath = projPath:joinpath("Views"):joinpath(controller_name):joinpath(string.format("%s.cshtml", viewName))
     switch(viewPath, "vsplit")
+end
+
+-- Get the pure controller name
+get_controller_name = function ()
+    -- Currnet file name is the last element in list
+    current_controller_name = cur_buf_path_list()[#cur_buf_path_list()]
+
+    -- Delete Controller suffix and .cs
+    current_controller_name = string.gsub(current_controller_name, "Controller", "")
+    current_controller_name = string.gsub(current_controller_name, ".cs", "")
+
+    return current_controller_name;
+end
+
+PosType = {
+    UNDEFINED = -1,
+    CONTROLLER = 1,
+    VIEW = 2,
+}
+
+-- Get the currnet file position
+-- Returns: Controller, View, Undefined
+get_cur_pos = function ()
+    local cur = cur_buf_path_list()
+    if cur[#cur - 1] == "Controllers" then
+        return PosType.CONTROLLER
+    elseif cur[#cur - 2] == "Views" then
+        return PosType.VIEW
+    else
+        return PosType.UNDEFINED
+    end
+end
+
+Toggle = function ()
+    -- Where we are now ? Controller or View.
+    local cur_pos = get_cur_pos()
+
+    if cur_pos == PosType.CONTROLLER then
+        switch_to_view()
+    end
 end
