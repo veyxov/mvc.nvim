@@ -58,7 +58,19 @@ switch_to_view = function ()
     local viewName = get_current_method_name()
     local controller_name = get_controller_name()
     -- Views/ControllerName/viewName.cshtml
-    local viewPath = projPath:joinpath("Views"):joinpath(controller_name):joinpath(string.format("%s.cshtml", viewName))
+    local viewsPath = projPath:joinpath("Views") -- Proj/Views
+    local viewControllerPath = viewsPath:joinpath(controller_name) -- Proj/Views/User
+    local viewPath = viewControllerPath:joinpath(string.format("%s.cshtml", viewName)) -- Proj/Views/User/Create.cshtml
+
+    P(viewPath.filename)
+
+    if not viewControllerPath:exists() then
+        local usr_input = vim.fn.input("Create this view ? (y/n)")
+        if string.find(usr_input, "y") then
+            viewControllerPath:mkdir()
+        end
+    end
+
     switch(viewPath, "new")
 end
 
@@ -110,6 +122,9 @@ Toggle = function ()
     local cur_pos = get_cur_pos()
 
     if cur_pos == PosType.CONTROLLER then
+        -- if not pcall(switch_to_view) then
+        --     P("Error !")
+        -- end
         switch_to_view()
     else if cur_pos == PosType.VIEW then
         switch_to_controller()
