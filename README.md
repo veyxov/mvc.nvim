@@ -12,7 +12,7 @@ Requires:
 - Tree-Sitter
 - Plenary
 # Using packer.nvim
-```
+```lua
 use {
   'wexouv/mvc.nvim',
    requires = {
