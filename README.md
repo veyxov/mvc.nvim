@@ -11,7 +11,7 @@ Requires:
 - Neovim 5+
 - Tree-Sitter
 - Plenary
-Using packer.nvim
+# Using packer.nvim
 ```
 use {
   'wexouv/mvc.nvim',
