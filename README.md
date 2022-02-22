@@ -6,6 +6,21 @@
 - Determines the view name using *Tree-Sitter*
 - Creates the controller dir and file if doesn't exists
 
+# Installation:
+Requires:
+- Neovim 5+
+- Tree-Sitter
+- Plenary
+Using packer.nvim
+```
+use {
+  'wexouv/mvc.nvim',
+   requires = {
+    'nvim-lua/plenary.nvim',
+    'nvim-treesitter/nvim-treesitter'
+   }
+}
+```
 # Usage:
 Switch between Controllers and views ```require 'mvc'.Toggle()```
 
