@@ -14,7 +14,7 @@ Requires:
 # Using packer.nvim
 ```lua
 use {
-  'wexouv/mvc.nvim',
+  'veyxov/mvc.nvim',
    requires = {
     'nvim-lua/plenary.nvim',
     'nvim-treesitter/nvim-treesitter'
