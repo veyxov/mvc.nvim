@@ -21,8 +21,19 @@ use {
    }
 }
 ```
+
+# Using lazy.nvim
+```lua
+return {
+  'veyxov/mvc.nvim',
+   dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-treesitter/nvim-treesitter'
+   }
+}
+```
 # Usage:
-Switch between Controllers and views ```require 'mvc'.Toggle()```
+Switch between Controllers and Views ```require 'mvc'.Toggle()```
 
 # TODO:
 - Default keybinds
