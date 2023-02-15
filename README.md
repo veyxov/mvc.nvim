@@ -1,4 +1,3 @@
-# mvc.nvim
 ## Overview
 A plugin for flying inside a .NET MVC project
 
