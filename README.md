@@ -1,5 +1,6 @@
 # mvc.nvim
-## A plugin for flying inside a .NET MVC project
+## Overview
+A plugin for flying inside a .NET MVC project
 
 # Features
 - Switch between controller and views
